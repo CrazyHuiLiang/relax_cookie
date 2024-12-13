@@ -6,12 +6,13 @@ function start_serve(port = 80) {
         try {
             const parsed_cookie = cookie.parse(req.headers.cookie);
             const new_cookies = Object.entries(parsed_cookie).reduce((acc, [key, value]) => acc.concat(cookie.serialize(key, value, {
+                domain: req.headers.host.split('.').slice(-2).join('.'),
                 sameSite: 'none',
                 secure: true,
             })), [])
             res.setHeader("Set-Cookie", new_cookies);
             res.write(new_cookies.map(s => 'Set-Cookie: ' + s).join('\n\n'));
-            return res.end('所有');
+            return res.end('\n\n\n\n\nFinish');
         } catch (e) {
             return res.end('500 error: ' + e.message);
         }
