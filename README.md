@@ -4,6 +4,7 @@
 
 ```js
 {
+    domain: '默认是访问此站点的上级域名，可以通过url的 domain 参数进行指定',
     sameSite: 'none',
     secure: true,
 }
