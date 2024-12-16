@@ -14,14 +14,17 @@ function parse_param(url, name) {
 function start_serve(port = 80) {
     const server = http.createServer((req, res) => {
         try {
-            const domain = parse_param(req.url, 'domain');
+            console.log(req.headers.host, req.url);
+            const domain = parse_param(req.url, 'domain') || req.headers.host.split('.').slice(1).join('.');
+            console.log('set-domain', domain);
             const parsed_cookie = cookie.parse(req.headers.cookie || '');
             const new_cookies = Object.entries(parsed_cookie).reduce((acc, [key, value]) => acc.concat(decodeURIComponent(cookie.serialize(key, value, {
-                domain: domain || req.headers.host.split('.').slice(1).join('.'),
+                domain,
                 sameSite: 'none',
                 secure: true,
             }))), [])
-            res.setHeader("Set-Cookie", new_cookies);
+            console.log(new_cookies);
+            res.setHeader("set-cookie", new_cookies);
             res.write(new_cookies.map(s => 'Set-Cookie: ' + s).join('\n\n'));
             return res.end('\n\n\n\n\nFinish');
         } catch (e) {
