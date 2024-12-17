@@ -14,7 +14,7 @@ function parse_param(url, name) {
 function start_serve(port = 80) {
     const server = http.createServer((req, res) => {
         try {
-            console.log(req.headers.host, req.url);
+            console.log(req.headers.host, req.url, req.headers.cookie);
             const domain = parse_param(req.url, 'domain') || req.headers.host.split('.').slice(1).join('.');
             console.log('set-domain', domain);
             const parsed_cookie = cookie.parse(req.headers.cookie || '', {
@@ -24,6 +24,7 @@ function start_serve(port = 80) {
                 domain,
                 sameSite: 'none',
                 secure: true,
+                encode: str => str, // 不对 cookie 值进行任何改动
             })), [])
             console.log(new_cookies);
             res.setHeader("set-cookie", new_cookies);
