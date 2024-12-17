@@ -17,12 +17,14 @@ function start_serve(port = 80) {
             console.log(req.headers.host, req.url);
             const domain = parse_param(req.url, 'domain') || req.headers.host.split('.').slice(1).join('.');
             console.log('set-domain', domain);
-            const parsed_cookie = cookie.parse(req.headers.cookie || '');
-            const new_cookies = Object.entries(parsed_cookie).reduce((acc, [key, value]) => acc.concat(decodeURIComponent(cookie.serialize(key, value, {
+            const parsed_cookie = cookie.parse(req.headers.cookie || '', {
+                decode: str => str, // 不对 cookie 值进行任何改动
+            });
+            const new_cookies = Object.entries(parsed_cookie).reduce((acc, [key, value]) => acc.concat(cookie.serialize(key, value, {
                 domain,
                 sameSite: 'none',
                 secure: true,
-            }))), [])
+            })), [])
             console.log(new_cookies);
             res.setHeader("set-cookie", new_cookies);
             res.write(new_cookies.map(s => 'Set-Cookie: ' + s).join('\n\n'));
